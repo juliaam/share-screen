@@ -53,6 +53,19 @@
   --live: var(--ctp-red);
   --video-bg: var(--ctp-crust);
   --overlay: rgb(24 25 38 / 75%);
+  /* Avatars: one per user, picked from the user id (Avatar in ui.tsx). */
+  --avatar-1: var(--ctp-mauve);
+  --avatar-2: var(--ctp-blue);
+  --avatar-3: var(--ctp-green);
+  --avatar-4: var(--ctp-peach);
+  --avatar-5: var(--ctp-pink);
+  --avatar-6: var(--ctp-teal);
+  --avatar-7: var(--ctp-yellow);
+  --avatar-8: var(--ctp-sapphire);
+  --avatar-9: var(--ctp-maroon);
+  --avatar-10: var(--ctp-lavender);
+  --avatar-11: var(--ctp-sky);
+  --avatar-12: var(--ctp-flamingo);
   --radius: 8px;
   color-scheme: dark;
 }
@@ -385,7 +398,7 @@ label.toggle {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--avatar-bg, var(--accent));
   color: var(--on-accent);
   display: grid;
   place-items: center;
@@ -397,6 +410,18 @@ label.toggle {
   width: 28px;
   height: 28px;
   font-size: 12px;
+}
+
+.avatar.large {
+  width: 52px;
+  height: 52px;
+  font-size: 18px;
+}
+
+.avatar.xl {
+  width: 72px;
+  height: 72px;
+  font-size: 26px;
 }
 
 .content {
@@ -735,6 +760,159 @@ label.toggle {
 
 .presence {
   white-space: nowrap;
+}
+
+/* Who is connected (room header): overlapping avatars, each ring cutting
+   the one behind it. */
+.header-presence:empty {
+  display: none;
+}
+
+.presence-stack {
+  display: inline-flex;
+}
+
+.presence-stack .avatar {
+  box-shadow: 0 0 0 2px var(--bg);
+  font-size: 11px;
+}
+
+.presence-stack .avatar + .avatar {
+  margin-left: -4px;
+}
+
+.avatar.more {
+  background: var(--bg-active);
+  color: var(--text-strong);
+}
+
+/* Who is in the call, in the middle of the stage (nobody sharing). */
+.presence-room {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  padding: 24px;
+}
+
+/* Auto margins center the content but let it scroll from the top when tall. */
+.presence-room > :first-child {
+  margin-top: auto;
+}
+
+.presence-room > :last-child {
+  margin-bottom: auto;
+}
+
+.presence-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  max-width: 760px;
+}
+
+.presence-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.presence-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px 20px;
+}
+
+.presence-person {
+  width: 96px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.presence-person.online {
+  animation: presence-in 220ms ease-out;
+}
+
+.presence-person.offline {
+  width: 88px;
+  opacity: 0.45;
+  filter: grayscale(1);
+}
+
+.presence-avatar {
+  position: relative;
+}
+
+/* "Connected" dot, ringed by the stage color. */
+.presence-status {
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 0 3px var(--bg-deep);
+}
+
+.presence-name {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-strong);
+  font-size: 13px;
+}
+
+.presence-person.offline .presence-name {
+  color: var(--text);
+  font-size: 12px;
+}
+
+.presence-tag {
+  margin-top: -4px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.presence-hint {
+  text-align: center;
+}
+
+.presence-hint p {
+  margin: 4px 0;
+}
+
+.presence-hint svg {
+  vertical-align: -1px;
+}
+
+@keyframes presence-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .presence-person.online {
+    animation: none;
+  }
 }
 
 /* Your live share: red dot, resolution (strong), fps (muted). */

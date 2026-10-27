@@ -30,6 +30,7 @@ import {
   VolumeX
 } from 'lucide-react'
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
+import { createPortal } from 'react-dom'
 
 import { SYSTEM_AUDIO_DEVICE_LABEL } from '../../../shared/api'
 import {
@@ -45,6 +46,7 @@ import {
   type ShareQuality
 } from '../lib/share'
 import { limitationLabel, statsSampler, type InboundStats, type OutboundStats, type TrackStats } from '../lib/stats'
+import { PresenceStack, PresenceView, usePresenceSounds } from './Presence'
 import { SourcePicker } from './SourcePicker'
 
 const isLinux = window.api.platform === 'linux'
@@ -122,14 +124,22 @@ const mbps = (kbps: number) => (kbps >= 1000 ? `${(kbps / 1000).toFixed(1)} Mbps
  * on the low layer.
  */
 export function Stage({
+  roomId,
   roomName,
+  memberCount,
+  presenceSlot,
   canPublish,
   audioVolume,
   audioMuted,
   onAudioVolumeChange,
   onAudioMutedChange
 }: {
+  roomId: string
   roomName: string
+  /** Changes when members are added or removed; the presence view reloads them. */
+  memberCount: number
+  /** Where the avatars of who is connected go (the room header). */
+  presenceSlot: HTMLElement | null
   canPublish: boolean
   audioVolume: number
   audioMuted: boolean
@@ -162,6 +172,7 @@ export function Stage({
   const systemAudioCleanup = useRef<(() => void) | null>(null)
   const controlsRef = useRef<HTMLDivElement>(null)
   useFitLevels(controlsRef)
+  usePresenceSounds()
 
   const watched =
     screens.find((t) => t.participant.identity === watching) ??
@@ -433,10 +444,7 @@ export function Stage({
     <div className="stage">
       <div className="stage-area">
         {screens.length === 0 ? (
-          <div className="empty">
-            <p className="muted">Ninguém está compartilhando a tela.</p>
-            {canPublish && <p className="muted small">Use “Compartilhar” para começar.</p>}
-          </div>
+          <PresenceView roomId={roomId} memberCount={memberCount} canPublish={canPublish} />
         ) : watched ? (
           <div className="watch-layout">
             <div className="watch-main">
@@ -570,6 +578,7 @@ export function Stage({
       </div>
 
       {picking && <SourcePicker onPick={start} onClose={() => setPicking(false)} />}
+      {presenceSlot && createPortal(<PresenceStack />, presenceSlot)}
     </div>
   )
 }

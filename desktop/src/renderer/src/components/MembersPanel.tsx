@@ -3,7 +3,7 @@ import { type FormEvent, useCallback, useEffect, useState } from 'react'
 
 import type { Member, Room, User } from '../../../shared/api'
 import { api, errorMessage } from '../lib/api'
-import { ConfirmDialog, Menu, useToast } from './ui'
+import { Avatar, ConfirmDialog, Menu, useToast } from './ui'
 
 type Pending = { kind: 'transfer' | 'remove'; member: Member } | null
 
@@ -116,7 +116,7 @@ export function MembersPanel({
           const manageable = room.can_manage && m.role !== 'owner' && !isMe
           return (
             <li key={m.user_id} className={m.disabled ? 'disabled' : ''}>
-              <div className="avatar small">{m.display_name.slice(0, 1).toUpperCase()}</div>
+              <Avatar id={m.user_id} name={m.display_name} size="small" />
               <div className="member-names">
                 <span className="member-name">
                   {m.display_name}

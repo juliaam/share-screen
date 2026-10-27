@@ -31,6 +31,8 @@ export function RoomPage({
   const [connecting, setConnecting] = useState(false)
   const [audioVolume, setAudioVolume] = useState(1)
   const [audioMuted, setAudioMuted] = useState(false)
+  // Filled by the Stage (inside the LiveKit room) while connected.
+  const [presenceSlot, setPresenceSlot] = useState<HTMLDivElement | null>(null)
 
   async function connect() {
     setError('')
@@ -61,6 +63,7 @@ export function RoomPage({
           {room.temporary ? 'Temporária' : 'Fixa'}
         </span>
         <div className="spacer" />
+        <div className="header-presence" ref={setPresenceSlot} />
         {room.join_code && (
           <button className="ghost" onClick={() => setDialog('invite')} title="Convidar">
             <UserPlus size={16} /> <span className="label">Convidar</span>
@@ -93,7 +96,10 @@ export function RoomPage({
               className="lk-room"
             >
               <Stage
+                roomId={room.id}
                 roomName={join.room.name}
+                memberCount={room.member_count}
+                presenceSlot={presenceSlot}
                 canPublish={join.room.can_publish}
                 audioVolume={audioVolume}
                 audioMuted={audioMuted}

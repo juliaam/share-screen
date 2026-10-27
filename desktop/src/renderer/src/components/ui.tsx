@@ -7,6 +7,7 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  type CSSProperties,
   type ReactNode
 } from 'react'
 import { createPortal } from 'react-dom'
@@ -169,6 +170,37 @@ export function Menu({ trigger, label, items }: { trigger: ReactNode; label: str
           document.body
         )}
     </>
+  )
+}
+
+/** Matches the --avatar-N tokens in styles.css. */
+const AVATAR_COLORS = 12
+
+/** First letter of the first and last words: "Ana Maria Souza" → "AS". */
+function initials(name: string): string {
+  const words = name.trim().split(/\s+/).filter(Boolean)
+  if (words.length === 0) return '?'
+  const first = [...words[0]][0]
+  const last = words.length > 1 ? [...words[words.length - 1]][0] : ''
+  return (first + last).toUpperCase()
+}
+
+/** Same id, same color, everywhere (the id is the user id = LiveKit identity). */
+function avatarColor(id: string): string {
+  let hash = 0
+  for (const ch of id) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0
+  return `var(--avatar-${(hash % AVATAR_COLORS) + 1})`
+}
+
+export function Avatar({ id, name, size }: { id: string; name: string; size?: 'small' | 'large' | 'xl' }) {
+  return (
+    <div
+      className={`avatar ${size ?? ''}`}
+      style={{ '--avatar-bg': avatarColor(id) } as CSSProperties}
+      aria-hidden="true"
+    >
+      {initials(name)}
+    </div>
   )
 }
 

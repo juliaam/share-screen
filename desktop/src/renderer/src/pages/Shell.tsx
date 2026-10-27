@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 import type { Room, Session } from '../../../shared/api'
 import { CreateRoomDialog, JoinCodeDialog, SettingsDialog } from '../components/Dialogs'
+import { Avatar } from '../components/ui'
 import { api, errorMessage } from '../lib/api'
 import { AdminPage } from './AdminPage'
 import { RoomPage } from './RoomPage'
@@ -75,7 +76,7 @@ export function Shell({ session, onLogout }: { session: Session; onLogout: () =>
         {error && <p className="error small pad">{error}</p>}
 
         <footer className="user-panel">
-          <div className="avatar">{me.display_name.slice(0, 1).toUpperCase()}</div>
+          <Avatar id={me.id} name={me.display_name} />
           <div className="user-names">
             <strong>{me.display_name}</strong>
             <span className="muted small">@{me.username}</span>
